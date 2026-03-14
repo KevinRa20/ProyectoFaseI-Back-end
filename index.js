@@ -5,6 +5,7 @@ const cors = require("cors");
 const authRoutes = require("./routes/auth");
 const inventarioRoutes = require("./routes/inventario");
 const notificacionesRoutes = require("./routes/notificaciones");
+const comprasRoutes = require("./routes/compras");
 
 
 const app = express();
@@ -21,7 +22,7 @@ mongoose.connect("mongodb://localhost:27017/AgroCommerce")
 app.use("/api/auth", authRoutes);
 app.use("/api/inventario", inventarioRoutes);
 app.use("/api/notificaciones", notificacionesRoutes);
-
+app.use("/api/compras", comprasRoutes);
 
 app.listen(5000, () => {
   console.log("Servidor corriendo en puerto 5000");

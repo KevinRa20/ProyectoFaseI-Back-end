@@ -10,18 +10,21 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
-  },
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST"]
+  }
 });
 
-let usuarios = {};
+// usuarios conectados
+const usuarios = new Map();
 
 io.on("connection", (socket) => {
   console.log("Usuario conectado:", socket.id);
 
   // registrar usuario
   socket.on("registrarUsuario", (nombre) => {
-    usuarios[nombre] = socket.id;
+    usuarios.set(nombre, socket.id);
+    socket.username = nombre;
 
     console.log("Usuarios conectados:", usuarios);
   });
@@ -29,23 +32,34 @@ io.on("connection", (socket) => {
   // enviar mensaje
   socket.on("enviarMensaje", (data) => {
 
-    const socketDestino = usuarios[data.para];
+    const { de, para, texto, fecha } = data;
 
+    const mensaje = {
+      de,
+      para,
+      texto,
+      fecha
+    };
+
+    const socketDestino = usuarios.get(para);
+    const socketOrigen = usuarios.get(de);
+
+    // enviar al receptor
     if (socketDestino) {
-      io.to(socketDestino).emit("recibirMensaje", data);
-    } else {
-      console.log("Usuario no conectado:", data.para);
+      io.to(socketDestino).emit("recibirMensaje", mensaje);
     }
+
+    // enviar al emisor
+    if (socketOrigen) {
+      io.to(socketOrigen).emit("recibirMensaje", mensaje);
+    }
+
+    console.log("Mensaje enviado:", mensaje);
   });
 
-  // desconexión
   socket.on("disconnect", () => {
-
-    for (let usuario in usuarios) {
-      if (usuarios[usuario] === socket.id) {
-        delete usuarios[usuario];
-        break;
-      }
+    if (socket.username) {
+      usuarios.delete(socket.username);
     }
 
     console.log("Usuario desconectado:", socket.id);

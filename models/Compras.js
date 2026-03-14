@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+const mongoose = require("mongoose");
 
 const compraSchema = new mongoose.Schema({
   nombreComprador: { type: String, required: true },
@@ -6,8 +6,7 @@ const compraSchema = new mongoose.Schema({
   cantidad: { type: Number, required: true },
   precio: { type: Number, required: true },
   total: { type: Number, required: true },
-  fechaCompra: { type: Date, default: Date.now },
-  estado: { type: String, default: "pendiente" }
+  fechaCompra: { type: Date, default: Date.now }
 });
 
-export default mongoose.model("Compras", compraSchema);
+module.exports = mongoose.model("Compras", compraSchema);
