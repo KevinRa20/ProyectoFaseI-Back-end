@@ -4,8 +4,9 @@ const User = require("../models/user");
 
 const router = express.Router();
 
-const Stripe = require("stripe");
-const stripe = Stripe("sk_test_51TCP6gGPea1HEkaiOeWoeBlsuqP8c5lhQC9C0ZR81XzhB9k4Xl7BERnjrYMT0YViXmOYAuIGiA70XqePA9Eg5eh000qIZ0ogNd");
+require("dotenv").config();
+
+const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
 
 
 // ======================
@@ -129,7 +130,7 @@ router.post("/login", async (req, res) => {
 
 
 // ======================
-// 🔥 NUEVO: CREATE CHECKOUT (UPGRADE PLAN)
+// NUEVO: CREATE CHECKOUT (UPGRADE PLAN)
 // ======================
 router.post("/create-checkout-session", async (req, res) => {
   const { priceId, user, plan } = req.body;
@@ -169,7 +170,7 @@ router.post("/create-checkout-session", async (req, res) => {
 
 
 // ======================
-// 🔥 NUEVO: ACTUALIZAR PLAN (DESPUÉS DEL PAGO)
+// NUEVO: ACTUALIZAR PLAN (DESPUÉS DEL PAGO)
 // ======================
 router.post("/update-plan", async (req, res) => {
   const { userId, plan } = req.body;
